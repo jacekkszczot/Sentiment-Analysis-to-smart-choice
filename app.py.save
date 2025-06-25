@@ -1,4 +1,4 @@
-import streamlit as st
+≈import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
@@ -738,6 +738,7 @@ def display_analysis_results(df: pd.DataFrame, summary_stats: Dict, brand: str):
     visualizer = SentimentVisualizer(config)
     
     # Debug: Check what columns we have
+    st.write("**Debug - Available columns:**", list(df.columns))
     
     # Determine data source safely
     data_source_info = "Live Google News" if 'source' in df.columns and df.iloc[0]['source'] == 'google_news_live' else "Sample Data"

@@ -13,8 +13,13 @@ from io import BytesIO
 class SentimentVisualizer:
     def __init__(self, config):
         self.config = config
-        self.colors = config.DEFAULT_COLORS
-        self.theme = config.CHART_THEME
+        # FIX: Access config object properly
+        self.colors = config.DEFAULT_COLORS if hasattr(config, 'DEFAULT_COLORS') else {
+            'positive': '#28a745',
+            'negative': '#dc3545', 
+            'neutral': '#6c757d'
+        }
+        self.theme = config.CHART_THEME if hasattr(config, 'CHART_THEME') else 'plotly_white'
     
     def create_sentiment_pie_chart(self, summary_stats: Dict) -> go.Figure:
         """Create sentiment distribution pie chart"""
@@ -254,13 +259,17 @@ class SentimentVisualizer:
             'source', 'score', 'created_utc'
         ]
         
-        result = top_posts[display_columns].copy()
+        # Filter columns that exist
+        available_columns = [col for col in display_columns if col in top_posts.columns]
+        result = top_posts[available_columns].copy()
         
         # Truncate long text
-        result['original_text'] = result['original_text'].str[:200] + '...'
+        if 'original_text' in result.columns:
+            result['original_text'] = result['original_text'].str[:200] + '...'
         
         # Round confidence
-        result['final_confidence'] = result['final_confidence'].round(3)
+        if 'final_confidence' in result.columns:
+            result['final_confidence'] = result['final_confidence'].round(3)
         
         return result
     
